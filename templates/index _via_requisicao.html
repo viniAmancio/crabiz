@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <title>crabiz online</title>    
+</head>
+<body> 
+        nome<br>
+        <input type="text" name="nome"><br>
+        telefone<br>
+        <input type="number" name="telefone"><br>
+        senha<br>
+        <input type="password" name="senha"><br>
+
+        <button type="submit" onclick="enviar_cadastro">Cadastrar</button><br>        
+    <a href="/logar"><button>Logar</button></a> 
+</body>
+<script type="text/javascript">
+
+    function enviar_mensagem(){
+        let dados_cadastro = {
+            nome: $("#nome").val(),
+            telefone: $("#telefone").val(),
+            senha: $("#senha").val()            
+        };
+
+        $.ajax({
+            url:"/index_via_requisicao",
+            type: 'POST',
+            data: JSON.sringify(dados_cadastro),
+            datatype: "json",
+            success: function(){
+                $('#resultado').append("CADASTRO EFETUADO COM SUCESSO   ");
+            },
+            error: function (){                
+                $('#resultado').append("ERRO AO CADASTRAR O USUÁRIO");
+            }
+        })
+    }
+
+
+</script>
+</html>

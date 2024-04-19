@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <title>crabiz online</title>
+    <style>
+
+body {
+  font-family: Arial, sans-serif;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: aquamarine;
+}
+
+h3 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+select {
+  background-color: dimgray;  
+  color: azure;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+option {
+  padding: 5px;
+  border-bottom: 1px solid #ccc;
+  display: flex;
+  justify-content: space-between;
+}
+
+option:last-child {
+  border-bottom: none;
+}
+
+option .message {
+  max-width: 70%;
+  padding: 10px;
+  background-color: #ddd;
+  border-radius: 5px;
+}
+
+option .username {
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+select {
+  background-color: dimgray;  
+  padding: 5px;
+  margin-top: 10px;
+  width: 50%;
+}
+
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.chat-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.chat-history {
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.chat-input {
+  display: flex;
+  align-items: center;
+  width: 50%;
+}
+</style>
+</head>
+
+<body>
+    <script type="text/javascript">
+
+      function mostrarUsuarios(){
+          $.ajax({
+                url: "/get/usuarios",
+                type: "GET",
+                success: function(contatos){
+                    for(let i=0; i<contatos.length; i++){
+                      let texto_html = '<option value="'+contatos[i]['telefone']+'">'+contatos[i]['nome']+'</option>'
+                      $('#listaDeContatos').append(texto_html)
+                    }
+                
+                }
+            })
+        }
+
+        $(document).ready(mostrarUsuarios());
+
+        function mostrarMensagens(){
+            $("#chat-history").empty()
+            $.ajax({
+                url:"/get/mensagens/" + $("#listaDeContatos").val(),
+                type: "GET",
+                success: function(mensagens){
+                  for(let i=0;i < mensagens.length;i++){
+                      tag = "<li>" + mensagens[i]["mensagem"] + "</li>"
+                      $("#chat-history").append(tag)  
+                    }
+                  }
+                })  
+        }
+        $(document).ready(mostrarMensagens());
+        
+        function enviarMensagem(){
+          let dados = {
+            tel: $('#listaDeContatos').val(),
+            mensagem: $('#mensagem').val()
+
+          }
+
+          $.ajax({
+            url:'/enviar_mensagem',
+            type: 'POST',
+            data: JSON.stringify(dados),  
+            contentType: 'application/json',
+            dataType: 'json',
+            success:function(){
+              $('#return').append("MENSAGEM ENVIADA COM SUCESSO ✔")
+            },
+            error:function(){
+              $('#return').append("ERRO AO ENVIAR MENSAGEM ❌")
+            }
+
+
+          })
+        
+        }
+        
+    </script> 
+    <form action="#" method="POST">
+        <h3>PARA QUEM DESEJA ENVIAR MENSAGEM?</h3>
+        <br>
+            <select id="listaDeContatos" onchange="mostrarMensagens()">
+                <option></option>
+            </select>
+
+        <h3>SUAS MENSAGENS</h3>
+        
+        <ul id="chat-history">
+            <li></li>
+        </ul>
+        
+    </form>
+    <h3 id="return"></h3>
+      <input type="text" name="mensagem" id="mensagem">
+      <button type="submit" onclick="enviarMensagem()">Enviar</button>   
+</body>
+</html>
